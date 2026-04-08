@@ -1,0 +1,210 @@
+﻿/* Artist page styling */
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  /* background: linear-gradient(180deg, #f5f7fc 0%, #edf2fb 100%); */
+  color: #111827;
+  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+h1 {
+  margin: 0 0 0.75rem;
+  font-size: clamp(2rem, 2.5vw, 2.75rem);
+  letter-spacing: -0.03em;
+}
+
+p {
+  color: #000000;
+  line-height: 1.75;
+  margin: 0 0 1.5rem;
+}
+
+main,
+section {
+  width: min(980px, calc(100% - 2rem));
+  margin: 0 auto;
+}
+
+.page-shell {
+  display: grid;
+  gap: 1.5rem;
+  padding: 2rem 0 3rem;
+}
+
+.card {
+  background: #629984;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 18px;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.08);
+  padding: 2rem;
+}
+
+.upload-card {
+  display: grid;
+  gap: 1rem;
+}
+
+#uploadForm,
+#albumForm {
+  display: grid;
+  gap: 1rem;
+}
+
+#uploadForm input[type="text"],
+#uploadForm input[type="file"],
+#albumForm input[type="text"] {
+  width: 100%;
+  padding: 0.95rem 1rem;
+  font-size: 1rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  background: #bac8bb;
+}
+
+#uploadForm input[type="text"],
+#albumForm input[type="text"] {
+  outline: none;
+}
+
+#uploadForm input[type="file"] {
+  border-style: dashed;
+  background: #bac8bb;
+}
+
+#uploadForm button,
+#albumForm button {
+  width: fit-content;
+  padding: 0.95rem 1.5rem;
+  border: none;
+  border-radius: 999px;
+  background: #134219;
+  color: #ffffff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+#uploadForm button:hover,
+#albumForm button:hover {
+  background: 09391e;
+  transform: translateY(-1px);
+}
+
+.music-checkbox-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.music-checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  background: #bac8bb;
+  color: #111827;
+  cursor: pointer;
+}
+
+.music-checkbox-item input[type="checkbox"] {
+  width: 1.1rem;
+  height: 1.1rem;
+  margin: 0;
+}
+
+.music-checkbox-empty {
+  margin: 0;
+  padding: 0.9rem 1rem;
+  border: 1px dashed #cbd5e1;
+  border-radius: 12px;
+  background: #bac8bb;
+}
+
+.logout {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.primary-button {
+  padding: 0.85rem 1.5rem;
+  border: none;
+  border-radius: 999px;
+  font-weight: 600;
+  color: #ffffff;
+  background: #134219;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.primary-button:hover {
+  background: #dc2626;
+  transform: translateY(-1px);
+}
+
+#uploadStatus,
+#albumStatus {
+  margin: 0;
+  color: #0f172a;
+  font-weight: 500;
+}
+
+.my_album {
+  background: #629984;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 18px;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.08);
+  padding: 2rem;
+}
+
+.albums-list {
+  color: #0f172a;
+}
+
+.album-list-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.album-item {
+  padding: 1rem 1.1rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 14px;
+  background: #bac8bb;
+}
+
+.album-item h3 {
+  margin: 0 0 0.5rem;
+}
+
+.album-item p {
+  margin: 0 0 0.75rem;
+}
+
+.album-song-list {
+  margin: 0;
+  padding-left: 1.2rem;
+  color: #334155;
+}
+
+@media (max-width: 640px) {
+  .page-shell {
+    padding: 1.25rem 0 2rem;
+  }
+
+  .card {
+    padding: 1.5rem;
+  }
+
+  #uploadForm button,
+  #albumForm button,
+  .primary-button {
+    width: 100%;
+  }
+}

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload songs</title>
+    <link rel="stylesheet" href="/stylesheets/style_artist.css">
+</head>
+<body>
+    <main class="page-shell">
+        <section class="card upload-card">
+            <div>
+                <h1>Upload a new song</h1>
+                <p>Choose your track and publish it to the artist dashboard.</p>
+            </div>
+
+            <form id="uploadForm" enctype="multipart/form-data">
+                <input type="text" name="title" placeholder="Song Title" required>
+                <input type="file" name="music" accept="audio/*" required>
+                <button type="submit">Upload</button>
+            </form>
+
+            <p id="uploadStatus"></p>
+        </section>
+
+        <section class="card upload-card">
+            <div>
+                <h2>Create an album</h2>
+                <p>Select songs you uploaded and bundle them into one album.</p>
+            </div>
+
+            <form id="albumForm">
+                <input type="text" name="title" placeholder="Album title" required>
+                <label for="musicsList">Choose songs</label>
+                <div id="musicsList" class="music-checkbox-list" aria-live="polite"></div>
+                <button type="submit">Create album</button>
+            </form>
+
+            <p id="albumStatus"></p>
+        </section>
+
+    <section>
+            <div class="my_album" >
+                <h2>My Albums</h2>
+                <div id="albumsList" class="albums-list" aria-live="polite">Loading albums...</div>
+
+            </div>
+        </section>
+
+        <section class="card">
+            <div class="logout">
+                <button id="logoutButton" class="primary-button" type="button">Logout</button>
+            </div>
+        </section>
+
+
+    </main>
+    <script src="/javascripts/script_artist.js"></script>
+</body>
+</html>

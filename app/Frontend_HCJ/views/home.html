@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Player Webapp -  HOME</title>
+    <link rel="stylesheet" href="/stylesheets/style_home.css">
+</head>
+<body>
+    <main class="page-shell">
+        <section class="hero">
+            <p class="eyebrow">Music Player Webapp</p>
+            <h1>Press play and move through your library.</h1>
+       </section>
+
+        <section class="player-card">
+            <div class="player-copy">
+                <p class="player-label">Now Playing</p>
+                <h2 id="nowPlayingTitle">Choose a song</h2>
+                <p id="nowPlayingArtist">Pick any track from the list below to start playback.</p>
+            </div>
+            <div class="player-actions">
+                <button id="togglePlaybackButton" class="primary-button" type="button" disabled>Play</button>
+            </div>
+            <audio id="audioPlayer" controls preload="metadata"></audio>
+        </section>
+
+        <section class="library-card">
+            <div class="section-heading">
+                <h2>All Songs</h2>
+                <p>Tap a track to play it.</p>
+            </div>
+            <div id="musicList">Loading songs...</div>
+
+        </section>
+
+        <section class="library-card">
+            <div class="section-heading">
+                <h2>Albums</h2>
+                <p>Browse albums and play tracks directly from each collection.</p>
+            </div>
+            <div id="albumList">Loading albums...</div>
+        </section>
+
+
+
+
+        <section>
+            <div class="logout">
+
+                <button id="logoutButton" class="primary-button" type="button">Logout
+
+                
+                </button>
+            </div>
+        </section>
+    </main>
+
+    
+
+
+
+    <script src="/javascripts/script_home.js"></script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link rel="stylesheet" href="/stylesheets/style_register.css">
+</head>
+<body>
+    <main class="register-shell">
+        <section class="register-panel">
+            <div class="register-copy">
+                <p class="eyebrow">Music Player</p>
+                <h1>Create your account</h1>
+                <p class="subtitle">Join as a listener or artist and start building your music space with a sharper dark-theme onboarding flow.</p>
+            </div>
+
+            <form id="registerForm">
+                <input type="text" name="username" placeholder="Username" required>
+                <input type="email" name="email" placeholder="Email" required>
+                <input type="password" name="password" placeholder="Password" required>
+
+                <label for="role">Role</label>
+                <select name="role" id="role">
+                    <option value="">--Select a role--</option>
+                    <option value="artist">Artist</option>
+                    <option value="user" selected>User</option>
+                </select>
+
+                <button type="submit">Register</button>
+            </form>
+
+            <p class="register-footer">Already have an account? <a href="/login">Login</a></p>
+        </section>
+    </main>
+
+</body>
+ <script src="/javascripts/script_register.js"></script>
+</html>
