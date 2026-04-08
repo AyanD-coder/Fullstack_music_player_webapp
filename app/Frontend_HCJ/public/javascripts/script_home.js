@@ -4,17 +4,41 @@ document.addEventListener("DOMContentLoaded", async () => {
     const audioPlayer = document.getElementById("audioPlayer");
     const nowPlayingTitle = document.getElementById("nowPlayingTitle");
     const nowPlayingArtist = document.getElementById("nowPlayingArtist");
+    const prevTrackButton = document.getElementById("prevTrackButton");
     const togglePlaybackButton = document.getElementById("togglePlaybackButton");
+    const nextTrackButton = document.getElementById("nextTrackButton");
     const logoutButton = document.getElementById("logoutButton");
     let currentMusicId = null;
     let currentPlayButton = null;
+    let playlist = [];
+    let currentTrackIndex = -1;
+    const trackRegistry = new Map();
 
-    if (!musicList || !albumList || !audioPlayer || !nowPlayingTitle || !nowPlayingArtist || !togglePlaybackButton) {
+    if (!musicList || !albumList || !audioPlayer || !nowPlayingTitle || !nowPlayingArtist || !prevTrackButton || !togglePlaybackButton || !nextTrackButton) {
         return;
     }
 
     function updateToggleButton() {
         togglePlaybackButton.textContent = audioPlayer.paused ? "Play" : "Pause";
+    }
+
+    function updateSkipButtons() {
+        const hasPlaylist = playlist.length > 0 && currentTrackIndex !== -1;
+        prevTrackButton.disabled = !hasPlaylist || currentTrackIndex <= 0;
+        nextTrackButton.disabled = !hasPlaylist || currentTrackIndex >= playlist.length - 1;
+    }
+
+    function registerTrackReference(music, item, button, options = {}) {
+        const musicId = music?._id || music?.id;
+
+        if (!musicId) {
+            return;
+        }
+
+        const existing = trackRegistry.get(musicId);
+        if (!existing || options.primary) {
+            trackRegistry.set(musicId, { music, item, button });
+        }
     }
 
     function setActiveTrack(music, item, button) {
@@ -36,6 +60,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         nowPlayingTitle.textContent = music.title || "Untitled track";
         nowPlayingArtist.textContent = `Artist: ${music.artist?.username || "Unknown"}`;
         togglePlaybackButton.disabled = false;
+        currentTrackIndex = playlist.findIndex((track) => (track._id || track.id) === currentMusicId);
+        updateSkipButtons();
     }
 
     async function playTrack(music, item, button) {
@@ -51,6 +77,22 @@ document.addEventListener("DOMContentLoaded", async () => {
             button.textContent = "Play";
             updateToggleButton();
         }
+    }
+
+    async function playTrackByIndex(index) {
+        if (index < 0 || index >= playlist.length) {
+            return;
+        }
+
+        const music = playlist[index];
+        const musicId = music?._id || music?.id;
+        const reference = trackRegistry.get(musicId);
+
+        if (!reference) {
+            return;
+        }
+
+        await playTrack(reference.music, reference.item, reference.button);
     }
 
     togglePlaybackButton.addEventListener("click", async () => {
@@ -69,6 +111,22 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     });
 
+    prevTrackButton.addEventListener("click", async () => {
+        if (currentTrackIndex <= 0) {
+            return;
+        }
+
+        await playTrackByIndex(currentTrackIndex - 1);
+    });
+
+    nextTrackButton.addEventListener("click", async () => {
+        if (currentTrackIndex === -1 || currentTrackIndex >= playlist.length - 1) {
+            return;
+        }
+
+        await playTrackByIndex(currentTrackIndex + 1);
+    });
+
     audioPlayer.addEventListener("play", () => {
         updateToggleButton();
         if (currentPlayButton) {
@@ -85,12 +143,17 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     audioPlayer.addEventListener("ended", () => {
         updateToggleButton();
+        if (currentTrackIndex !== -1 && currentTrackIndex < playlist.length - 1) {
+            void playTrackByIndex(currentTrackIndex + 1);
+            return;
+        }
+
         if (currentPlayButton) {
             currentPlayButton.textContent = "Replay";
         }
     });
 
-    function createTrackButton(music, item) {
+    function createTrackButton(music, item, options = {}) {
         const button = document.createElement("button");
         button.className = "music-item-button";
         button.type = "button";
@@ -105,6 +168,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             await playTrack(music, item, button);
         });
 
+        registerTrackReference(music, item, button, options);
         return button;
     }
 
@@ -125,6 +189,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         const data = await response.json();
         const musics = Array.isArray(data.musics) ? data.musics : [];
+        playlist = musics.filter((music) => Boolean(music?.uri));
 
         if (musics.length === 0) {
             musicList.textContent = "No songs available yet.";
@@ -153,7 +218,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             status.className = "music-item-status";
             status.textContent = music.uri ? "Ready to play" : "Track URL unavailable";
 
-            const button = createTrackButton(music, item);
+            const button = createTrackButton(music, item, { primary: true });
 
             details.appendChild(title);
             details.appendChild(artist);
@@ -166,6 +231,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         musicList.innerHTML = "";
         musicList.appendChild(list);
         updateToggleButton();
+        updateSkipButtons();
     } catch (error) {
         musicList.textContent = "Failed to load songs. Please refresh the page.";
         console.error("Failed to load music list:", error);
@@ -198,14 +264,18 @@ document.addEventListener("DOMContentLoaded", async () => {
         grid.className = "album-grid";
 
         function collapseAlbum(card, heading, tracks, indicator) {
-            tracks.hidden = true;
+            if (tracks) {
+                tracks.hidden = true;
+            }
             heading.setAttribute("aria-expanded", "false");
             card.classList.remove("is-open");
             indicator.textContent = "Show songs";
         }
 
         function expandAlbum(card, heading, tracks, indicator) {
-            tracks.hidden = false;
+            if (tracks) {
+                tracks.hidden = false;
+            }
             heading.setAttribute("aria-expanded", "true");
             card.classList.add("is-open");
             indicator.textContent = "Hide songs";
@@ -238,36 +308,47 @@ document.addEventListener("DOMContentLoaded", async () => {
             card.appendChild(heading);
 
             if (Array.isArray(album.musics) && album.musics.length > 0) {
-                const tracks = document.createElement("ul");
-                tracks.className = "album-track-list";
-                tracks.hidden = true;
+                let tracks = null;
 
-                album.musics.forEach((music) => {
-                    const item = document.createElement("li");
-                    item.className = "music-item album-track-item";
-                    item.dataset.musicId = music._id || music.id || "";
+                function buildAlbumTracks() {
+                    if (tracks) {
+                        return tracks;
+                    }
 
-                    const details = document.createElement("div");
+                    tracks = document.createElement("ul");
+                    tracks.className = "album-track-list";
+                    tracks.hidden = true;
 
-                    const trackTitle = document.createElement("strong");
-                    trackTitle.className = "music-item-title";
-                    trackTitle.textContent = music.title || "Untitled track";
+                    album.musics.forEach((music) => {
+                        const item = document.createElement("li");
+                        item.className = "music-item album-track-item";
+                        item.dataset.musicId = music._id || music.id || "";
 
-                    const trackStatus = document.createElement("div");
-                    trackStatus.className = "music-item-status";
-                    trackStatus.textContent = music.uri ? "Play from album" : "Track URL unavailable";
+                        const details = document.createElement("div");
 
-                    const button = createTrackButton(music, item);
+                        const trackTitle = document.createElement("strong");
+                        trackTitle.className = "music-item-title";
+                        trackTitle.textContent = music.title || "Untitled track";
 
-                    details.appendChild(trackTitle);
-                    details.appendChild(trackStatus);
-                    item.appendChild(details);
-                    item.appendChild(button);
-                    tracks.appendChild(item);
-                });
+                        const trackStatus = document.createElement("div");
+                        trackStatus.className = "music-item-status";
+                        trackStatus.textContent = music.uri ? "Play from album" : "Track URL unavailable";
+
+                        const button = createTrackButton(music, item);
+
+                        details.appendChild(trackTitle);
+                        details.appendChild(trackStatus);
+                        item.appendChild(details);
+                        item.appendChild(button);
+                        tracks.appendChild(item);
+                    });
+
+                    card.appendChild(tracks);
+                    return tracks;
+                }
 
                 heading.addEventListener("click", () => {
-                    const isOpen = !tracks.hidden;
+                    const isOpen = tracks ? !tracks.hidden : false;
 
                     grid.querySelectorAll(".album-card").forEach((otherCard) => {
                         const otherHeading = otherCard.querySelector(".album-card-header");
@@ -286,10 +367,9 @@ document.addEventListener("DOMContentLoaded", async () => {
                         return;
                     }
 
-                    expandAlbum(card, heading, tracks, indicator);
+                    const currentTracks = buildAlbumTracks();
+                    expandAlbum(card, heading, currentTracks, indicator);
                 });
-
-                card.appendChild(tracks);
             } else {
                 const empty = document.createElement("p");
                 empty.className = "album-card-meta";

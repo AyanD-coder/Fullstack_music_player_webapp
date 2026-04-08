@@ -91,6 +91,7 @@ body {
 .player-actions {
     display: flex;
     justify-content: flex-start;
+    gap: 10px;
 }
 
 .primary-button {
@@ -114,6 +115,28 @@ body {
     opacity: 0.55;
     cursor: not-allowed;
     box-shadow: none;
+}
+
+.secondary-button {
+    border: 1px solid rgba(24, 33, 47, 0.18);
+    border-radius: 999px;
+    padding: 12px 20px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-main);
+    background: rgba(255, 255, 255, 0.55);
+    cursor: pointer;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+}
+
+.secondary-button:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 24px rgba(24, 33, 47, 0.08);
+}
+
+.secondary-button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
 }
 
 #audioPlayer {
@@ -274,5 +297,15 @@ body {
 
     .music-item-button {
         width: 100%;
+    }
+
+    .player-actions {
+        flex-wrap: wrap;
+    }
+
+    .secondary-button,
+    .primary-button {
+        width: 100%;
+        justify-content: center;
     }
 }
